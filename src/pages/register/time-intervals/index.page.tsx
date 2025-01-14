@@ -97,9 +97,9 @@ export default function TimeIntervals() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function handleSetTimeIntervals(data: any) {
-    const formData = data as TimeIntervalsFormOutput
+    const { intervals } = data as TimeIntervalsFormOutput
 
-    await api.post('/users/time-intervals', formData)
+    await api.post('/users/time-intervals', { intervals })
   }
 
   return (
