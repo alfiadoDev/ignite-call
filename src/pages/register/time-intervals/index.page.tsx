@@ -20,6 +20,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { getWeekDays } from '@/utils/get-week-day'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { convertTimeStringToMinutes } from '@/utils/convert-time-string-to-minutes'
 
 const timeIntervalsFormSchema = z.object({
   intervals: z
@@ -35,10 +36,32 @@ const timeIntervalsFormSchema = z.object({
     .transform((intervals) => intervals.filter((interval) => interval.enabled))
     .refine((intervals) => intervals.length > 0, {
       message: 'Voce precisa selecionar pelo menos um dia da semana',
-    }),
+    })
+    .transform((intervals) => {
+      return intervals.map((interval) => {
+        return {
+          weekDay: interval.weekDay,
+          startTimeInMinutes: convertTimeStringToMinutes(interval.startTime),
+          endTimeInMinutes: convertTimeStringToMinutes(interval.endTime),
+        }
+      })
+    })
+    .refine(
+      (intervals) => {
+        return intervals.every(
+          (interval) =>
+            interval.endTimeInMinutes - 60 >= interval.startTimeInMinutes,
+        )
+      },
+      {
+        message:
+          'O horario de terminio deve ser pelo menos uma hora distante de inicio',
+      },
+    ),
 })
 
-type TimeIntervalsFormData = z.infer<typeof timeIntervalsFormSchema>
+type TimeIntervalsFormInput = z.input<typeof timeIntervalsFormSchema>
+type TimeIntervalsFormOutput = z.output<typeof timeIntervalsFormSchema>
 
 export default function TimeIntervals() {
   const {
@@ -47,7 +70,7 @@ export default function TimeIntervals() {
     handleSubmit,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<TimeIntervalsFormInput>({
     resolver: zodResolver(timeIntervalsFormSchema),
     defaultValues: {
       intervals: [
@@ -71,8 +94,10 @@ export default function TimeIntervals() {
 
   const intervals = watch('intervals')
 
-  function handleSetTimeIntervals(data: TimeIntervalsFormData) {
-    console.log(data)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function handleSetTimeIntervals(data: any) {
+    const formData = data as TimeIntervalsFormOutput
+    console.log(formData)
   }
 
   return (
@@ -126,7 +151,7 @@ export default function TimeIntervals() {
           ))}
         </IntervalContainer>
 
-        {errors.intervals && (
+        {errors.intervals?.root && (
           <FormError size="sm">{errors.intervals.root.message}</FormError>
         )}
 
