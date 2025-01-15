@@ -28,7 +28,7 @@ export default async function handle(
 
   const isPastDate = referenceDate.endOf('day').isBefore(new Date())
 
-  if (isPastDate) return res.json({ availability: [] })
+  if (isPastDate) return res.json({ possibleTimes: [], availableTimes: [] })
 
   const userAvailability = await prisma.userTimeInterval.findFirst({
     where: {
@@ -37,7 +37,8 @@ export default async function handle(
     },
   })
 
-  if (!userAvailability) return res.json({ availability: [] })
+  if (!userAvailability)
+    return res.json({ possibleTimes: [], availableTimes: [] })
 
   const { time_start_in_minutes, time_end_in_minutes } = userAvailability
 
