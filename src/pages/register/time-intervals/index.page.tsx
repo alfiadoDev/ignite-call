@@ -144,6 +144,9 @@ export default function TimeIntervals() {
                 </IntervalDay>
                 <IntervalInput>
                   <TextInput
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                    crossOrigin={undefined}
                     {...register(`intervals.${index}.startTime`)}
                     size="sm"
                     type="time"
@@ -151,6 +154,9 @@ export default function TimeIntervals() {
                     disabled={intervals[index].enabled === false}
                   />
                   <TextInput
+                    crossOrigin={undefined}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
                     {...register(`intervals.${index}.endTime`)}
                     size="sm"
                     type="time"

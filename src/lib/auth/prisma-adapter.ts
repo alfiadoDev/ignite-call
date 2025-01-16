@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Adapter } from 'next-auth/adapters'
 import { prisma } from '../prisma'
 import { NextApiRequest, NextApiResponse, NextPageContext } from 'next'
@@ -8,7 +9,7 @@ export function PrismaAdapter(
   res: NextApiResponse | NextPageContext['res'],
 ): Adapter {
   return {
-    async createUser(user) {
+    async createUser(user: { name: any; email: any; avatar_url: any }) {
       const { '@ignitecall:userId': userIdOnCookies } = parseCookies({ req })
 
       if (!userIdOnCookies) throw new Error('User ID not found on cookies.')
@@ -125,9 +126,19 @@ export function PrismaAdapter(
       }
     },
 
-    async linkAccount(account) {
-      console.log('account ', account)
-
+    async linkAccount(account: {
+      userId: any
+      type: any
+      provider: any
+      providerAccountId: any
+      refresh_token: any
+      access_token: any
+      expires_at: any
+      token_type: any
+      scope: any
+      id_token: any
+      session_state: any
+    }) {
       await prisma.account.create({
         data: {
           user_id: account.userId,
