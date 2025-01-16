@@ -7,7 +7,7 @@ export const ConfirmForm = styled(Box, {
   flexDirection: 'column',
   gap: '$4',
 
-  lable: {
+  label: {
     display: 'flex',
     flexDirection: 'column',
     gap: '$2',
